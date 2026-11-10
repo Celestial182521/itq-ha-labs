@@ -1,0 +1,21 @@
+Laboratorio 1.1 - Línea base de disponibilidad (catalog-service)
+Ángel Mauricio Flores Olivarez - Grupo 6V
+
+Se corrió el catalog-service sin patrones de resiliencia y se le mandaron 200 solicitudes seguidas con el script test-availability.sh (el servicio quedó en el puerto 9090 porque el 8080 ya estaba ocupado en el servidor).
+
+Resultados:
+- Solicitudes totales: 200
+- Respuestas HTTP 200 (SUCCESS): 136 (68%)
+- Respuestas HTTP 500: 64 (32%)
+- Respuestas lentas (~3 segundos): 38, todas con HTTP 200
+- Respuestas rápidas y correctas: 98 (49%)
+- Disponibilidad observada: 0.68
+
+Interpretación:
+La disponibilidad salió en 0.68, dentro del rango esperado (0.60 a 0.75). El 32% de las solicitudes terminó en HTTP 500 por la falla simulada de conexión a la base de datos, y como no hay ningún patrón de resiliencia el error le llega directo al cliente.
+
+Lo más importante es la latencia: 38 respuestas tardaron alrededor de 3 segundos. El script las cuenta como disponibles porque regresan HTTP 200, pero para un usuario esperar 3 segundos es prácticamente una falla. Si quitamos esas, solo el 49% de las solicitudes fueron rápidas y correctas, o sea que la disponibilidad "real" desde el punto de vista del usuario es bastante más baja que el 0.68.
+
+En los health checks, /health, /live y /ready respondieron UP con HTTP 200. Eso muestra que el proceso puede estar vivo y "listo" aunque la funcionalidad falle 1 de cada 3 veces, así que los health checks por sí solos no garantizan que el servicio esté funcionando bien.
+
+No apareció ninguna respuesta DEGRADED_CACHE porque el servicio todavía no tiene Fallback. Esta medición es la línea base para comparar en el laboratorio 1.2, donde se agregan Timeout, Retry, Fallback y CircuitBreaker.
