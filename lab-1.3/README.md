@@ -79,9 +79,15 @@ Cada paso del script guarda su salida en esta carpeta (`docker-push.txt`, `docke
 
 ![kubectl get](05-kubectl-get.png)
 
-**Eventos del pod** (`kubectl describe pod`): `Pulling image` / `Successfully pulled image` desde Docker Hub y las probes `/ready` y `/live` configuradas
+**`kubectl describe pod`**
 
 ![describe pod](06-describe-pod.png)
+
+Lo que se ve aquí:
+- **La imagen viene de Docker Hub:** el `Image ID` es `docker.io/celestial1825/catalog-service@sha256:f37fc64b…`, el mismo digest que dio el `docker push` (captura 01).
+- **Las probes están configuradas:** `Liveness: http-get :8080/live ... period=10s` y `Readiness: http-get :8080/ready ... period=5s`, con la condición `Ready True`.
+- **Kubernetes las está ejecutando solo:** el evento `Readiness probe failed: HTTP probe failed with statuscode: 503 (x255 over 7h1m)` sale del 5 % de fallas simuladas en `ReadinessHealthCheck`. Llevaba 7 h corriendo y nadie hizo curl a mano, así que esas 255 revisiones las hizo Kubernetes. Aun así el pod siguió `Running` con 0 reinicios, porque para sacarlo del Service se necesitan 2 fallas seguidas y `/live` nunca falló.
+- Los eventos `Pulling`/`Pulled` ya no aparecen porque Kubernetes borra los eventos después de ~1 h, y el pod llevaba 7 h arriba.
 
 ### 4. Validación del servicio
 
