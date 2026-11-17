@@ -36,6 +36,13 @@ Disponibilidad baseline: **0.68** (136 OK / 64 HTTP 500).
 | Latencia máx. | 3.03 s | 1.43 s |
 | Latencia promedio | 0.574 s | 0.358 s |
 
+## Lab 1.3 – De Docker a Kubernetes local → [`lab-1.3/`](lab-1.3/)
+
+Imagen `celestial1825/catalog-service:1.0.0` publicada en Docker Hub y desplegada en Minikube
+con `k8s/01-deployment.yaml` (readiness `/ready`, liveness `/live`) y `k8s/02-service.yaml`.
+Script del flujo completo: `catalog-service/lab-1.3.sh {build|deploy|check|clean}`.
+Evidencias y explicación técnica en [`lab-1.3/README.md`](lab-1.3/README.md).
+
 ## Código → [`catalog-service/`](catalog-service/)
 
 Código fuente del servicio con los patrones de resiliencia aplicados
